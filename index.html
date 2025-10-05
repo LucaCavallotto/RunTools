@@ -3,57 +3,161 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RunTools</title>
+    <title>Maratona</title>
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🏃</text></svg>">
     <link rel="stylesheet" href="assets/style.css"/>
+    <script src="assets/app.js" defer></script>
 </head>
 <body>
     <div class="container">
-        <div class="header">
-            <h1>Running Zone Calculator</h1>
-            <p class="subtitle">Calculate training zones and race predictions from your 10K time</p>
+        <header class="header">
+            <h1 class="header-title">Maratona</h1>
+            <p class="header-subtitle">Training zones and pace calculator</p>
+        </header>
+
+        <div class="section">
+            <label class="label" for="calcMode">Mode</label>
+            <div class="custom-dropdown" id="calcModeDropdown">
+                <div class="custom-dropdown-toggle" id="calcModeToggle">
+                    Zone Calculator
+                </div>
+                <div class="custom-dropdown-menu" id="calcModeMenu">
+                    <div class="custom-dropdown-item selected" data-value="zone">Zone Calculator</div>
+                    <div class="custom-dropdown-item" data-value="pace">Pace Calculator</div>
+                    <div class="custom-dropdown-item" data-value="time">Time Calculator</div>
+                    <div class="custom-dropdown-item" data-value="distance">Distance Calculator</div>
+                </div>
+            </div>
+            <select id="calcMode" class="original-select">
+                <option value="zone">Zone Calculator</option>
+                <option value="pace">Pace Calculator</option>
+                <option value="time">Time Calculator</option>
+                <option value="distance">Distance Calculator</option>
+            </select>
         </div>
-        
-        <div class="content">
-            <div class="input-section">
-                <label for="time10k">10K Time</label>
-                <input type="text" id="time10k" placeholder="45:30">
-                <div class="error" id="error">Invalid format. Use MM:SS or HH:MM:SS</div>
-                <div class="success-message" id="successMsg">Copied to clipboard</div>
-            </div>
-            
-            <div class="button-group">
-                <button class="primary" onclick="calculate()">Calculate</button>
-                <button class="secondary" onclick="reset()">Reset</button>
-                <button class="secondary" id="copyBtn" onclick="copyResults()" disabled>Copy</button>
-            </div>
-            
-            <div class="results" id="results">
-                <div class="reference">
-                    <div class="reference-grid">
-                        <div class="reference-item">
-                            <div class="reference-label">10K Time</div>
-                            <div class="reference-value" id="refTime"></div>
+
+        <div class="section" id="zoneInputs">
+            <label class="label" for="time10k">10K Time</label>
+            <input type="text" id="time10k" class="input-field" placeholder="45:30">
+            <div class="error-text" id="errorZone">Invalid format. Use MM:SS or HH:MM:SS</div>
+        </div>
+
+        <div class="section hidden" id="paceInputs">
+            <div class="input-group">
+                <label class="label">Distance</label>
+                <div class="input-row">
+                    <div class="custom-dropdown" id="distancePresetPaceDropdown">
+                        <div class="custom-dropdown-toggle" id="distancePresetPaceToggle">
+                            Custom
                         </div>
-                        <div class="reference-item">
-                            <div class="reference-label">Threshold Pace</div>
-                            <div class="reference-value" id="refPace"></div>
+                        <div class="custom-dropdown-menu" id="distancePresetPaceMenu">
+                            <div class="custom-dropdown-item selected" data-value="custom">Custom</div>
+                            <div class="custom-dropdown-item" data-value="5">5K</div>
+                            <div class="custom-dropdown-item" data-value="10">10K</div>
+                            <div class="custom-dropdown-item" data-value="21.0975">Half Marathon</div>
+                            <div class="custom-dropdown-item" data-value="42.195">Marathon</div>
                         </div>
                     </div>
-                </div>
-                
-                <div class="section">
-                    <h2>Training Zones</h2>
-                    <div id="zones"></div>
-                </div>
-                
-                <div class="section">
-                    <h2>Race Predictions</h2>
-                    <div id="races"></div>
+                    <select id="distancePresetPace" class="original-select">
+                        <option value="custom">Custom</option>
+                        <option value="5">5K</option>
+                        <option value="10">10K</option>
+                        <option value="21.0975">Half Marathon</option>
+                        <option value="42.195">Marathon</option>
+                    </select>
+                    <input type="text" id="distancePace" class="input-field" placeholder="Distance (km)">
                 </div>
             </div>
+            <div class="input-group">
+                <label class="label" for="timePace">Time</label>
+                <input type="text" id="timePace" class="input-field" placeholder="45:30">
+            </div>
+            <div class="error-text" id="errorPace">Invalid input. Check distance and time format</div>
+        </div>
+
+        <div class="section hidden" id="timeInputs">
+            <div class="input-group">
+                <label class="label">Distance</label>
+                <div class="input-row">
+                    <div class="custom-dropdown" id="distancePresetTimeDropdown">
+                        <div class="custom-dropdown-toggle" id="distancePresetTimeToggle">
+                            Custom
+                        </div>
+                        <div class="custom-dropdown-menu" id="distancePresetTimeMenu">
+                            <div class="custom-dropdown-item selected" data-value="custom">Custom</div>
+                            <div class="custom-dropdown-item" data-value="5">5K</div>
+                            <div class="custom-dropdown-item" data-value="10">10K</div>
+                            <div class="custom-dropdown-item" data-value="21.0975">Half Marathon</div>
+                            <div class="custom-dropdown-item" data-value="42.195">Marathon</div>
+                        </div>
+                    </div>
+                    <select id="distancePresetTime" class="original-select">
+                        <option value="custom">Custom</option>
+                        <option value="5">5K</option>
+                        <option value="10">10K</option>
+                        <option value="21.0975">Half Marathon</option>
+                        <option value="42.195">Marathon</option>
+                    </select>
+                    <input type="text" id="distanceTime" class="input-field" placeholder="Distance (km)">
+                </div>
+            </div>
+            <div class="input-group">
+                <label class="label" for="paceTime">Pace (per km)</label>
+                <input type="text" id="paceTime" class="input-field" placeholder="4:33">
+            </div>
+            <div class="error-text" id="errorTime">Invalid input. Check distance and pace format</div>
+        </div>
+
+        <div class="section hidden" id="distanceInputs">
+            <div class="input-group">
+                <label class="label" for="timeDistance">Total Time</label>
+                <input type="text" id="timeDistance" class="input-field" placeholder="45:30">
+            </div>
+            <div class="input-group">
+                <label class="label" for="paceDistance">Pace (per km)</label>
+                <input type="text" id="paceDistance" class="input-field" placeholder="4:33">
+            </div>
+            <div class="error-text" id="errorDistance">Invalid input. Check time and pace format</div>
+        </div>
+
+        <div class="success-text" id="successMsg">Copied to clipboard</div>
+
+        <div class="button-group">
+            <button class="btn btn-primary" onclick="calculate()">Calculate</button>
+            <button class="btn btn-secondary" onclick="reset()">Reset</button>
+            <button class="btn btn-secondary" id="copyBtn" onclick="copyResults()" disabled>Copy</button>
+        </div>
+
+        <div class="results" id="results">
+            <div id="zoneResults" class="hidden">
+                <div class="metrics-grid">
+                    <div class="metric-card">
+                        <div class="metric-label">10K Time</div>
+                        <div class="metric-value" id="refTime"></div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-label">Threshold Pace</div>
+                        <div class="metric-value" id="refPace"></div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 class="section-title">Training Zones</h2>
+                    <div class="zones-grid" id="zones"></div>
+                </div>
+
+                <div class="section-divider"></div>
+
+                <div class="section">
+                    <h2 class="section-title">Race Predictions</h2>
+                    <div class="races-grid" id="races"></div>
+                </div>
+            </div>
+
+            <div id="paceTimeResults" class="hidden"></div>
         </div>
     </div>
-  <script src="assets/app.js" defer></script>
+
+    <div class="custom-dropdown-overlay" id="dropdownOverlay"></div>
 </body>
 </html>
